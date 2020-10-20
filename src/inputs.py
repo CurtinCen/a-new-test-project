@@ -31,27 +31,30 @@ class TrafficData():
         collection = []
         for his_road_state in self.his_road_state_list:
             for h_road in his_road_state:
-                collection.append([h_road[3]])
+                collection.append(h_road[3])
         return collection
 
     def collect_all_his_speed(self):
         collection = []
         for his_road_state in self.his_road_state_list:
             for h_road in his_road_state:
-                collection.append([h_road[1]])
+                collection.append(h_road[1])
         return collection
 
     def collect_all_cur_state_label(self):
         collection = []
         for c_road in self.cur_road_state:
-            collection.append([c_road[3]])
+            collection.append(c_road[3])
         return collection
 
     def collect_all_cur_speed_label(self):
         collection = []
         for c_road in self.cur_road_state:
-            collection.append([c_road[1]])
+            collection.append(c_road[1])
         return collection
+
+    def get_upload_format(self):
+        return [self.link_id, self.cur_time, self.pred_time]
 
 def collect_label_data_from_traffic_data_list(traffic_data_list):
     label_list = []
@@ -64,7 +67,7 @@ def collect_label_data_from_traffic_data_list(traffic_data_list):
 def collect_state_speed_from_traffic_data_list(traffic_data_list):
     state_speed_list = []
     for t_data in traffic_data_list:
-        state_speed_list+=t_data.collect_all_speed_state_label()
+        state_speed_list+=t_data.collect_all_state_speed_label()
     return state_speed_list
 
 def collect_state_car_num_from_traffic_data_list(traffic_data_list):
@@ -87,7 +90,7 @@ def load_data(fname):
                     c_item = c_road.split(":")
                     time_id = int(c_item[0])
                     speed, etc_speed, state_label, car_num = c_item[1].split(',')
-                    cur_road_state.append([time_id, float(speed), float(etc_speed), int(state_label), int(car_num)])
+                    cur_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
             except ValueError:
                 print(items[0])
                 sys.exit(0)
@@ -99,9 +102,9 @@ def load_data(fname):
                     h_item = h_road.split(":")
                     time_id = int(h_item[0])
                     speed, etc_speed, state_label, car_num = h_item[1].split(',')
-                    his_road_state.append([time_id, float(speed), float(etc_speed), int(state_label), int(car_num)])
+                    his_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
                 his_road_state_list.append(his_road_state)
-            t_data = TrafficData(link_id, pred_label, cur_time, pred_time, cur_road_state, his_road_state_list)
+            t_data = TrafficData(int(link_id), int(pred_label), int(cur_time), int(pred_time), cur_road_state, his_road_state_list)
             traffic_data_list.append(t_data)
         return traffic_data_list
 
