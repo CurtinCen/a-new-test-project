@@ -38,7 +38,7 @@ def pred_state_using_most_his_state(traffic_data_list):
         for s in his_state_list:
             count[s] += 1
         count = count.items()
-        count = sorted(count, key:lambda x:[1])
+        count = sorted(count, key=lambda x:[1])
         pred_state = count[-1][0]
         pred_list.append([link_id, pred_state])
     pred_list = sorted(pred_list, key=lambda x:x[0])
@@ -54,7 +54,7 @@ def pred_state_using_most_curr_state(traffic_data_list):
         for s in his_state_list:
             count[s] += 1
         count = count.items()
-        count = sorted(count, key:lambda x:[1])
+        count = sorted(count, key=lambda x:[1])
         pred_state = count[-1][0]
         pred_list.append([link_id, pred_state])
     pred_list = sorted(pred_list, key=lambda x:x[0])
@@ -79,7 +79,7 @@ def weighted_f1_score(label_data, pred_data):
 if __name__ == '__main__':
     date_star = 20190701
 #load data
-    traffic_data_list = inputs.load_data("./data/%d.txt"%date_star)
+    traffic_data_list = inputs.load_data("./traffic/%d.txt"%date_star)
 #show some statics
     state_speed_data = inputs.collect_state_speed_from_traffic_data_list(traffic_data_list)
     state_car_num_data = inputs.collect_state_car_num_from_traffic_data_list(traffic_data_list)

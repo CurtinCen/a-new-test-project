@@ -1,3 +1,4 @@
+import sys
 
 class TrafficData():
     def __init__(self, link_id, pred_label=-1, cur_time=None, pred_time=None, cur_road_state=None, his_road_state_list=None):
@@ -75,17 +76,21 @@ def collect_state_car_num_from_traffic_data_list(traffic_data_list):
 def load_data(fname):
     with open(fname, 'r') as fin:
         traffic_data_list = []
-        context = fin.read()
+        context = fin.read().strip()
         lines = context.split('\n')
         for line in lines:
             items = line.split(';')
-            link_id, pred_label, cur_time, pred_time = items.split()
-            cur_road_state = []
-            for c_road in items[1].split():
-                c_item = c_road.split(":")
-                time_id = int(c_item[0])
-                speed, etc_speed, state_label, car_num = c_item[1].split(',')
-                cur_road_state.append([time_id, float(speed), float(etc_speed), int(state_label), int(car_num)])
+            try:
+                link_id, pred_label, cur_time, pred_time = items[0].split()
+                cur_road_state = []
+                for c_road in items[1].split():
+                    c_item = c_road.split(":")
+                    time_id = int(c_item[0])
+                    speed, etc_speed, state_label, car_num = c_item[1].split(',')
+                    cur_road_state.append([time_id, float(speed), float(etc_speed), int(state_label), int(car_num)])
+            except ValueError:
+                print(items[0])
+                sys.exit(0)
 
             his_road_state_list = []
             for item in items[2:]:
