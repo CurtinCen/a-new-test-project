@@ -87,7 +87,7 @@ def pred_state_using_most_curr_state(traffic_data_list):
             count[s] += 1
         #print("state 0 has %d items out of %d"%(count[0], count[0]+ count[1]+count[2]+count[3]))
         count.pop(0)
-        count.pop(4)
+        #count.pop(4)
         count = count.items()
         count = sorted(count, key=lambda x:x[1])
         pred_state = count[-1][0]
@@ -124,7 +124,7 @@ def pred_state_using_avg_cur_speed(traffic_data_list, speed_range):
 def weighted_f1_score(label_data, pred_data):
 
     f1 = f1_score(y_true=label_data, y_pred=pred_data, average=None)
-    f1 = 0.2*f1[0] + 0.2*f1[1] + 0.2*f1[2] + 0.6*f1[3]
+    f1 = 0.2*f1[0] + 0.2*f1[1] + 0.6*f1[2] + 0.6*f1[3]
     return f1
 
 def cal_all_state(traffic_data_list):
@@ -158,10 +158,11 @@ def build_upload_data(traffic_data_list, pred_data, fout_name):
 
 
 if __name__ == '__main__':
-    date_star = 20190701
-
-#label distribution
+    date = 20190701
     for i in range(30):
+        date_star = date + i
+
+    #label distribution
         date_star = date_star + i
         traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
         label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
@@ -172,40 +173,32 @@ if __name__ == '__main__':
             else:
                 d[l] += 1
         print(d)
-    sys.exit(0)
+        #sys.exit(0)
 
-    #date_star = 'test'
-#load data
-    traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-    #cal_all_state(traffic_data_list)
-    #sys.exit(0)
-#show some statics
-    #state_speed_data = inputs.collect_state_speed_from_traffic_data_list(traffic_data_list)
-    #state_car_num_data = inputs.collect_state_car_num_from_traffic_data_list(traffic_data_list)
-    #show_state_label_speed_range(traffic_data_list)
-    #show_state_label_car_num_range(traffic_data_list)
+        #date_star = 'test'
+    #load data
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        #cal_all_state(traffic_data_list)
+        #sys.exit(0)
+    #show some statics
+        #state_speed_data = inputs.collect_state_speed_from_traffic_data_list(traffic_data_list)
+        #state_car_num_data = inputs.collect_state_car_num_from_traffic_data_list(traffic_data_list)
+        #show_state_label_speed_range(traffic_data_list)
+        #show_state_label_car_num_range(traffic_data_list)
 
-#basic baselines
-    label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
-    d = {}
-    for l in label_data:
-        if l not in d:
-            d[l] = 0.
-        else:
-            d[l] += 1
-    print(d)
-    sys.exit(0)
+    #basic baselines
+        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
 
-    pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
-    #pred_data_cur_state = pred_state_using_most_curr_state(traffic_data_list)
-    #pred_data = pred_with_simple_hy(traffic_data_list)
+        pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
+        #pred_data_cur_state = pred_state_using_most_curr_state(traffic_data_list)
+        #pred_data = pred_with_simple_hy(traffic_data_list)
 
-    print("his state pred f1 score %f"%(weighted_f1_score(label_data, pred_data_his_state)))
-    #print("cur state pred f1 score %f"%(weighted_f1_score(label_data, pred_data_cur_state)))
+        print("his state pred f1 score %f of dataset %s"%(weighted_f1_score(label_data, pred_data_his_state), str(date_star)))
+        #print("cur state pred f1 score %f"%(weighted_f1_score(label_data, pred_data_cur_state)))
 
-    #build_upload_data(traffic_data_list, pred_data_his_state, 'his_result.txt')
-    #build_upload_data(traffic_data_list, pred_data_cur_state, 'cur_result.txt')
-    #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
+        #build_upload_data(traffic_data_list, pred_data_his_state, 'his_result.txt')
+        #build_upload_data(traffic_data_list, pred_data_cur_state, 'cur_result.txt')
+        #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
 
 
 
