@@ -176,7 +176,7 @@ if __name__ == '__main__':
 
         #date_star = 'test'
     #load data
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        #traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
         #cal_all_state(traffic_data_list)
         #sys.exit(0)
     #show some statics
@@ -186,7 +186,7 @@ if __name__ == '__main__':
         #show_state_label_car_num_range(traffic_data_list)
 
     #basic baselines
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        #label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
 
         #pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
         #pred_data_cur_state = pred_state_using_most_curr_state(traffic_data_list)
@@ -199,10 +199,14 @@ if __name__ == '__main__':
         #build_upload_data(traffic_data_list, pred_data_his_state, 'his_result.txt')
         #build_upload_data(traffic_data_list, pred_data_cur_state, 'cur_result.txt')
         #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
-    date_star = 'test'
-    traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-    pred_data = pred_with_simple_hy(traffic_data_list)
-    build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
+
+        print("Process FILE %s END !!!"%str(date_star))
+    
+
+    #date_star = 'test'
+    #traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+    #pred_data = pred_with_simple_hy(traffic_data_list)
+    #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
 
 
 
