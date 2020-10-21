@@ -61,8 +61,15 @@ def collect_label_data_from_traffic_data_list(traffic_data_list):
     for t_data in traffic_data_list:
         label_list.append([t_data.link_id, t_data.pred_label])
     label_list = sorted(label_list, key=lambda x:x[0])
-    label_list = [l[1] for l in label_list]
-    return label_list
+    #res_list = [l[1] for l in label_list]
+    #replace all 4 with 3
+    res_list = []
+    for l in label_list:
+        if l[1] == 4:
+            res_list.append(3)
+        else:
+            res_list.append(l)
+    return res_list
 
 def collect_state_speed_from_traffic_data_list(traffic_data_list):
     state_speed_list = []

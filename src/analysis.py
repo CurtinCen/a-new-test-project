@@ -43,12 +43,11 @@ def pred_with_simple_hy(traffic_data_list):
         for s in his_state_list:
             count[s] += 1
         #print("state 0 has %d items out of %d"%(count[0], count[0]+ count[1]+count[2]+count[3]))
-        if count[2] == 0 and count[3] == 0:
+        if count[2] == 0 and count[3] == 0 and count[4] == 0:
             pred_list.append([link_id, 1])
-            continue
-        elif count[3] > count[2] and count[3] > count[1] + count[0]:
+        elif count[3] + count[4] > count[2] and count[3] + count[4] > count[1]:
             pred_list.append([link_id, 3])
-        elif count[2] > count[1] + count[0]:
+        elif count[2] > count[1]:
             pred_list.append([link_id, 2])
         else:
             pred_list.append([link_id, 1])
@@ -189,12 +188,13 @@ if __name__ == '__main__':
     #basic baselines
         label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
 
-        pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
+        #pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
         #pred_data_cur_state = pred_state_using_most_curr_state(traffic_data_list)
-        #pred_data = pred_with_simple_hy(traffic_data_list)
+        pred_data = pred_with_simple_hy(traffic_data_list)
 
-        print("his state pred f1 score %f of dataset %s"%(weighted_f1_score(label_data, pred_data_his_state), str(date_star)))
+        #print("his state pred f1 score %f of dataset %s"%(weighted_f1_score(label_data, pred_data_his_state), str(date_star)))
         #print("cur state pred f1 score %f"%(weighted_f1_score(label_data, pred_data_cur_state)))
+        print("most common label in his pred f1 score %f"%(weighted_f1_score(label_data, pred_data)))
 
         #build_upload_data(traffic_data_list, pred_data_his_state, 'his_result.txt')
         #build_upload_data(traffic_data_list, pred_data_cur_state, 'cur_result.txt')
