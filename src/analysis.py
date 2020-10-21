@@ -123,7 +123,7 @@ def pred_state_using_avg_cur_speed(traffic_data_list, speed_range):
 def weighted_f1_score(label_data, pred_data):
 
     f1 = f1_score(y_true=label_data, y_pred=pred_data, average=None)
-    f1 = 0.2*f1[0] + 0.2*f1[1] + 0.6*f1[2] + 0.6*f1[3]
+    f1 = 0.2*f1[0] + 0.2*f1[1] + 0.6*f1[2]
     return f1
 
 def cal_all_state(traffic_data_list):
