@@ -68,7 +68,7 @@ def collect_label_data_from_traffic_data_list(traffic_data_list):
         if l[1] == 4:
             res_list.append(3)
         else:
-            res_list.append(l)
+            res_list.append(l[1])
     return res_list
 
 def collect_state_speed_from_traffic_data_list(traffic_data_list):
