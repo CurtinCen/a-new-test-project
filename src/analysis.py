@@ -47,7 +47,7 @@ def pred_with_simple_hy(traffic_data_list):
             pred_list.append([link_id, 1])
         elif count[3] + count[4] > count[2] and count[3] + count[4] > count[1]:
             pred_list.append([link_id, 3])
-        elif count[2] > count[1]:
+        elif count[2] > count[1] and count[2] > count[3] + count[4]:
             pred_list.append([link_id, 2])
         else:
             pred_list.append([link_id, 1])
@@ -158,11 +158,11 @@ def build_upload_data(traffic_data_list, pred_data, fout_name):
 
 if __name__ == '__main__':
     date = 20190701
-    for i in range(30):
+    k = 30
+    for i in range(k):
         date_star = date + i
 
     #label distribution
-        date_star = date_star + i
         traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
         label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
         d = {}
@@ -199,6 +199,10 @@ if __name__ == '__main__':
         #build_upload_data(traffic_data_list, pred_data_his_state, 'his_result.txt')
         #build_upload_data(traffic_data_list, pred_data_cur_state, 'cur_result.txt')
         #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
+    date_star = 'test'
+    traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+    pred_data = pred_with_simple_hy(traffic_data_list)
+    build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
 
 
 
