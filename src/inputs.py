@@ -1,4 +1,5 @@
 import sys
+import networkx as nx
 
 class TrafficData():
     def __init__(self, link_id, pred_label=-1, cur_time=None, pred_time=None, cur_road_state=None, his_road_state_list=None):
@@ -117,4 +118,18 @@ def load_data(fname):
 
 
 
+
+
+def load_topo(fname):
+    with open(fname, 'r') as fin:
+        context = fin.read().strip().split('\n')
+        adj_dict = {}
+        for line in context:
+            node, edges = line.split('\t')
+            edges = edges.split(',')
+            node = int(node)
+            edges = [int(e) for e in edges]
+            adj_dict[node] = edges
+    G = nx.from_dict_of_lists(adj_dict)
+    return G
 
