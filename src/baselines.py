@@ -3,6 +3,7 @@ from sklearn.preprocessing import label_binarize, LabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from inputs import load_data
 import inputs
+import sys, time, os
 
 from models import Classifier, weighted_f1_score
 import pickle as pkl
@@ -24,7 +25,7 @@ def extract_statistical_features():
     features_dict = {}
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s.txt"%str(date_star))
         for traffic_data in traffic_data_list:
             link_id = traffic_data
             if link_id not in features_dict:
@@ -83,7 +84,7 @@ def sta_features(sta_feature_dict):
     trainX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s.txt"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
             features.append((traffic_data.link_id, sta_feature_dict[link_id]))
@@ -98,7 +99,7 @@ def sta_features(sta_feature_dict):
     valX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
             features.append((traffic_data.link_id, sta_feature_dict[link_id]))
@@ -113,7 +114,7 @@ def sta_features(sta_feature_dict):
     testX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
             features.append((traffic_data.link_id, sta_feature_dict[link_id]))
@@ -141,7 +142,7 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features)
     trainX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = extract_func(traffic_data_list)
         trainX += features
         print("procee file %s END!!"%str(date_star))
@@ -152,7 +153,7 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features)
     valX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = extract_func(traffic_data_list)
         valX += features
         print("procee file %s END!!"%str(date_star))
@@ -163,7 +164,7 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features)
     testX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = extract_func(traffic_data_list)
         testX += features
         print("procee file %s END!!"%str(date_star))
