@@ -1,6 +1,7 @@
 import sys
 import networkx as nx
 import os
+import pickle as pkl
 
 class TrafficData():
     def __init__(self, link_id, pred_label=-1, cur_time=None, pred_time=None, cur_road_state=None, his_road_state_list=None):
