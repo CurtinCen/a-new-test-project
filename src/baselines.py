@@ -2,8 +2,10 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import label_binarize, LabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from inputs import load_data
+import inputs
 
 from models import Classifier, weighted_f1_score
+import pickle as pkl
 
 #data partitioning, 0701~0720 training, 0721~0725 validation, 0726~0730 test
 
@@ -67,7 +69,15 @@ def raw_features():
 
 
 if __name__ == '__main__':
-    trainX, trainY, valX, valY, testX, testY = raw_features()
+    if os.path.exists("temp/raw_features.pkl"):
+        with open("temp/raw_features.pkl", 'rb') as fin:
+            [trainX, trainY, valX, valY, testX, testY] = pkl.load(fin)
+    else:
+        trainX, trainY, valX, valY, testX, testY = raw_features()
+        with open("temp/raw_features.pkl", 'wb') as fout:
+            pkl.dump([trainX, trainY, valX, valY, testX, testY], fout)
+
+    class_num = 3
     clf = Classifier('LR', class_num)
     clf.train(trainX, trainY)
     pred_trainX = clf.pred(trainX)
