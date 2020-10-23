@@ -69,6 +69,7 @@ def raw_features():
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     if os.path.exists("temp/raw_features.pkl"):
         with open("temp/raw_features.pkl", 'rb') as fin:
             [trainX, trainY, valX, valY, testX, testY] = pkl.load(fin)
@@ -76,12 +77,21 @@ if __name__ == '__main__':
         trainX, trainY, valX, valY, testX, testY = raw_features()
         with open("temp/raw_features.pkl", 'wb') as fout:
             pkl.dump([trainX, trainY, valX, valY, testX, testY], fout)
+    print("load data totally costs %f seconds"%(time.time()-start_time))
 
+    start_time = time.time()
     class_num = 3
     clf = Classifier('LR', class_num)
     clf.train(trainX, trainY)
+    print("training model totally costs %f seconds"%(time.time()-start_time))
+
+    start_time = time.time()
     pred_trainX = clf.pred(trainX)
+    print("pred train data totally costs %f seconds"%(time.time()-start_time))
+
+    start_time = time.time()
     pred_valX = clf.pred(valX)
+    print("pred val data totally costs %f seconds"%(time.time()-start_time))
 
     print("f1-score in training %f, in validation %f"%(weighted_f1_score(trainY, pred_trainX), weighted_f1_score(valY, pred_valX)))
 
