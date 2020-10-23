@@ -98,6 +98,8 @@ def load_data(fname):
                     c_item = c_road.split(":")
                     time_id = int(c_item[0])
                     speed, etc_speed, state_label, car_num = c_item[1].split(',')
+                    if int(state_label) == 4:
+                        state_label = 3
                     cur_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
             except ValueError:
                 print(items[0])
@@ -110,8 +112,12 @@ def load_data(fname):
                     h_item = h_road.split(":")
                     time_id = int(h_item[0])
                     speed, etc_speed, state_label, car_num = h_item[1].split(',')
+                    if int(state_label) == 4:
+                        state_label = 3
                     his_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
                 his_road_state_list.append(his_road_state)
+            if int(pred_label) == 4:
+                pred_label = 3
             t_data = TrafficData(int(link_id), int(pred_label), int(cur_time), int(pred_time), cur_road_state, his_road_state_list)
             traffic_data_list.append(t_data)
         return traffic_data_list

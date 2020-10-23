@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
 
     date = 20190701
-    k = 1
+    k = 0
     for i in range(k):
         date_star = date + i
 
@@ -253,12 +253,12 @@ if __name__ == '__main__':
     #basic baselines
         #label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
 
-        #pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
+        pred_data_his_state = pred_state_using_most_his_state(traffic_data_list)
         #pred_data_cur_state = pred_state_using_most_curr_state(traffic_data_list)
         #pred_data = pred_with_simple_hy(traffic_data_list)
         pred_data = pred_with_neighbor_link(traffic_data_list, graph)
 
-        #print("his state pred f1 score %f of dataset %s"%(weighted_f1_score(label_data, pred_data_his_state), str(date_star)))
+        print("his state pred f1 score %f of dataset %s"%(weighted_f1_score(label_data, pred_data_his_state), str(date_star)))
         #print("cur state pred f1 score %f"%(weighted_f1_score(label_data, pred_data_cur_state)))
         print("most common label in his pred f1 score %f"%(weighted_f1_score(label_data, pred_data)))
 
@@ -269,10 +269,11 @@ if __name__ == '__main__':
         print("Process FILE %s END !!!"%str(date_star))
 
 
-    #date_star = 'test'
-    #traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+    date_star = 'test'
+    traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
     #pred_data = pred_with_simple_hy(traffic_data_list)
-    #build_upload_data(traffic_data_list, pred_data, 'simple_hy.txt')
+    pred_data = pred_with_neighbor_link(traffic_data_list, graph)
+    build_upload_data(traffic_data_list, pred_data, 'simple_hy_neighbor.txt')
 
 
 
