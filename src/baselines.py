@@ -25,7 +25,7 @@ def extract_statistical_features():
     features_dict = {}
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         for traffic_data in traffic_data_list:
             link_id = traffic_data
             if link_id not in features_dict:
@@ -84,7 +84,7 @@ def sta_features(sta_feature_dict):
     trainX = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("%s.txt"%str(date_star))
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
             features.append((traffic_data.link_id, sta_feature_dict[link_id]))
@@ -126,6 +126,119 @@ def sta_features(sta_feature_dict):
     with open("temp/%s.pkl"%feature_name, 'wb') as fout:
         pkl.dump([trainX, valX, testX], fout)
     return trainX, valX, testX
+
+
+def extract_features1(sta_feature_dict):
+    #extract neighbor sta features
+    #feature 1: [mean history speed of all neighbors, std h speed, max h speed, min h speed]
+    #feature 2: [mean history car number of all neighbors, std, max, min]
+
+    if os.path.exists("temp/nb_sta_features.pkl"):
+        with open("temp/nb_sta_features.pkl"%feature_name, 'rb') as fin:
+            [trainX, valX, testX] = pkl.load(fin)
+            return trainX, valX, testX
+
+    topo_file = 'traffic/topo.txt'
+    graph = inputs.load_topo(topo_file)
+
+    #build training data
+    date = 20190701
+    k = 20
+    trainX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = []
+        for traffic_data in traffic_data_list:
+            link_id = traffic_data.link_id
+            if graph.has_node(link_id):
+                print("link %d not in graph"%link_id)
+                features.append((link_id, [0., 0., 0., 0., 0., 0., 0., 0.]))
+            else:
+                nbs = graph.neighbors(link_id)
+                nb_item_list = []
+                for n in nbs:
+                    t = sta_feature_dict[n]
+                    nb_item_list.append(t)
+                nb_item_list = np.array(nb_item_list)
+                nb_item_mean = np.mean(nb_item_list, axis=0)
+                nb_item_std = np.std(nb_item_list, axis=0)
+                nb_item_max = np.max(nb_item_list, axis=0)
+                nb_item_min = np.min(nb_item_list, axis=0)
+                nb_f = nb_item_mean.tolist() + nb_item_std.tolist() + nb_item_max.tolist() + nb_item_min.tolist()
+                features.append((link_id, nb_f))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
+        trainX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build validation
+    date = 20190721
+    k=5
+    valX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = []
+        for traffic_data in traffic_data_list:
+            link_id = traffic_data.link_id
+            if graph.has_node(link_id):
+                print("link %d not in graph"%link_id)
+                features.append((link_id, [0., 0., 0., 0., 0., 0., 0., 0.]))
+            else:
+                nbs = graph.neighbors(link_id)
+                nb_item_list = []
+                for n in nbs:
+                    t = sta_feature_dict[n]
+                    nb_item_list.append(t)
+                nb_item_list = np.array(nb_item_list)
+                nb_item_mean = np.mean(nb_item_list, axis=0)
+                nb_item_std = np.std(nb_item_list, axis=0)
+                nb_item_max = np.max(nb_item_list, axis=0)
+                nb_item_min = np.min(nb_item_list, axis=0)
+                nb_f = nb_item_mean.tolist() + nb_item_std.tolist() + nb_item_max.tolist() + nb_item_min.tolist()
+                features.append((link_id, nb_f))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
+        valX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build test
+    date = 20190726
+    k=5
+    testX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = []
+        for traffic_data in traffic_data_list:
+            link_id = traffic_data.link_id
+            if graph.has_node(link_id):
+                print("link %d not in graph"%link_id)
+                features.append((link_id, [0., 0., 0., 0., 0., 0., 0., 0.]))
+            else:
+                nbs = graph.neighbors(link_id)
+                nb_item_list = []
+                for n in nbs:
+                    t = sta_feature_dict[n]
+                    nb_item_list.append(t)
+                nb_item_list = np.array(nb_item_list)
+                nb_item_mean = np.mean(nb_item_list, axis=0)
+                nb_item_std = np.std(nb_item_list, axis=0)
+                nb_item_max = np.max(nb_item_list, axis=0)
+                nb_item_min = np.min(nb_item_list, axis=0)
+                nb_f = nb_item_mean.tolist() + nb_item_std.tolist() + nb_item_max.tolist() + nb_item_min.tolist()
+                features.append((link_id, nb_f))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
+        testX += features
+        print("procee file %s END!!"%str(date_star))
+
+    with open("temp/%s.pkl"%feature_name, 'wb') as fout:
+        pkl.dump([trainX, valX, testX], fout)
+    return trainX, valX, testX
+
+
 
 
 #simple linear model, load all raw features
@@ -185,8 +298,11 @@ if __name__ == '__main__':
     #extract statistical features
     sta_feature_dict = extract_statistical_features()
     print("build sta features dict end!")
-    trainX1, valX1, testX1 = extract_features1()
+    trainX1, valX1, testX1 = sta_features(sta_feature_dict)
     print("process statistical features end!")
+
+    trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
+    print("process neighbor sta features end!")
 
     trainX = trainX0
     valX = valX0
