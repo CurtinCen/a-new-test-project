@@ -214,14 +214,14 @@ if __name__ == '__main__':
 #graph statics
     #node_num = graph.number_of_nodes()
     #edges_num = graph.number_of_edges()
-    
+
     #items = list(graph.degree())
     #degrees = [item[1] for item in items]
     #print("total node %d, total edge %d, max degree %d, min degree %d, mean degree %f"%(node_num, edges_num, np.max(degrees), np.min(degrees), np.mean(degrees)))
 
 
     date = 20190701
-    k = 0
+    k = 30
     for i in range(k):
         date_star = date + i
 
