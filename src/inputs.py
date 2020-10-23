@@ -1,5 +1,6 @@
 import sys
 import networkx as nx
+import os
 
 class TrafficData():
     def __init__(self, link_id, pred_label=-1, cur_time=None, pred_time=None, cur_road_state=None, his_road_state_list=None):
@@ -85,42 +86,48 @@ def collect_state_car_num_from_traffic_data_list(traffic_data_list):
     return state_car_num_list
 
 def load_data(fname):
-    with open(fname, 'r') as fin:
-        traffic_data_list = []
-        context = fin.read().strip()
-        lines = context.split('\n')
-        for line in lines:
-            items = line.split(';')
-            try:
-                link_id, pred_label, cur_time, pred_time = items[0].split()
-                cur_road_state = []
-                for c_road in items[1].split():
-                    c_item = c_road.split(":")
-                    time_id = int(c_item[0])
-                    speed, etc_speed, state_label, car_num = c_item[1].split(',')
-                    if int(state_label) == 4:
-                        state_label = 3
-                    cur_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
-            except ValueError:
-                print(items[0])
-                sys.exit(0)
+    if os.path.exists('temp/%s.pkl'%fname):
+        with open('temp/%s.pkl'%fname, 'rb') as fin:
+            traffic_data_list = pkl.load(fin)
+    else:
+        with open('traffic/%s.txt'%fname, 'r') as fin:
+            traffic_data_list = []
+            context = fin.read().strip()
+            lines = context.split('\n')
+            for line in lines:
+                items = line.split(';')
+                try:
+                    link_id, pred_label, cur_time, pred_time = items[0].split()
+                    cur_road_state = []
+                    for c_road in items[1].split():
+                        c_item = c_road.split(":")
+                        time_id = int(c_item[0])
+                        speed, etc_speed, state_label, car_num = c_item[1].split(',')
+                        if int(state_label) == 4:
+                            state_label = 3
+                        cur_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
+                except ValueError:
+                    print(items[0])
+                    sys.exit(0)
 
-            his_road_state_list = []
-            for item in items[2:]:
-                his_road_state = []
-                for h_road in item.split():
-                    h_item = h_road.split(":")
-                    time_id = int(h_item[0])
-                    speed, etc_speed, state_label, car_num = h_item[1].split(',')
-                    if int(state_label) == 4:
-                        state_label = 3
-                    his_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
-                his_road_state_list.append(his_road_state)
-            if int(pred_label) == 4:
-                pred_label = 3
-            t_data = TrafficData(int(link_id), int(pred_label), int(cur_time), int(pred_time), cur_road_state, his_road_state_list)
-            traffic_data_list.append(t_data)
-        return traffic_data_list
+                his_road_state_list = []
+                for item in items[2:]:
+                    his_road_state = []
+                    for h_road in item.split():
+                        h_item = h_road.split(":")
+                        time_id = int(h_item[0])
+                        speed, etc_speed, state_label, car_num = h_item[1].split(',')
+                        if int(state_label) == 4:
+                            state_label = 3
+                        his_road_state.append([int(time_id), float(speed), float(etc_speed), int(state_label), int(car_num)])
+                    his_road_state_list.append(his_road_state)
+                if int(pred_label) == 4:
+                    pred_label = 3
+                t_data = TrafficData(int(link_id), int(pred_label), int(cur_time), int(pred_time), cur_road_state, his_road_state_list)
+                traffic_data_list.append(t_data)
+        with open('temp/%s.pkl'%fname, 'wb') as fout:
+            pkl.dump(traffic_data_list, fout)
+    return traffic_data_list
 
 
 
@@ -138,4 +145,49 @@ def load_topo(fname):
             adj_dict[node] = edges
     G = nx.from_dict_of_lists(adj_dict)
     return G
+
+
+#extract raw label data
+def extract_raw_label():
+    if os.path.exists("temp/labels.pkl"):
+        with open("temp/labels.pkl", 'rb') as fin:
+            [trainY, valY, testY] = pkl.load(fin)
+            return trainY, valY, testY
+    #build training data
+    date = 20190701
+    k = 20
+    trainY = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        trainY += label_data
+        print("procee file %s END!!"%str(date_star))
+
+    #build validation
+    date = 20190721
+    k=5
+    valY = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        valY += label_data
+        print("procee file %s END!!"%str(date_star))
+
+    #build test
+    date = 20190726
+    k=5
+    testX = []
+    testY = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        testY += label_data
+        print("procee file %s END!!"%str(date_star))
+    with open('temp/labels.pkl', 'wb') as fout:
+        pkl.dump([trainY, valY, testY], fout)
+    return trainY, valY, testY
+
 

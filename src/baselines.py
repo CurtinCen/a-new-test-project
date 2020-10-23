@@ -9,6 +9,52 @@ import pickle as pkl
 
 #data partitioning, 0701~0720 training, 0721~0725 validation, 0726~0730 test
 
+def extract_statistical_features():
+    #feature 1: [mean history speed, std h speed, max h speed, min h speed]
+    #feature 2: [mean history car number, std, max, min]
+    if os.path.exists('temp/sta_feature_dict.pkl'):
+        with open('temp/sta_feature_dict.pkl', 'rb') as fin:
+            sta_feature_dict = pkl.load(fin)
+            return sta_feature_dict
+
+    features_dict = {}
+    #build training data
+    date = 20190701
+    k = 20
+    features_dict = {}
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        for traffic_data in traffic_data_list:
+            link_id = traffic_data
+            if link_id not in features_dict:
+                features_dict[link_id] = {}
+                features_dict[link_id]['h_speed'] = []
+                features_dict[link_id]['car_num'] = []
+            for his_road_state in his_road_state_list:
+                for h_road in his_road_state:
+                    h_speed = h_road[1]
+                    car_num = h_road[4]
+                    features_dict[link_id]['h_speed'].append(h_speed)
+                    features_dict[link_id]['car_num'].append(car_num)
+    sta_feature_dict = {}
+    for link_id in features_dict:
+        mean_speed = np.mean(sta_feature_dict[link_id]['h_speed'])
+        max_speed = np.max(sta_feature_dict[link_id]['h_speed'])
+        min_speed = np.min(sta_feature_dict[link_id]['h_speed'])
+        std_speed = np.std(sta_feature_dict[link_id]['h_speed'])
+
+        mean_car_num = np.mean(sta_feature_dict[link_id]['car_num'])
+        max_car_num = np.max(sta_feature_dict[link_id]['car_num'])
+        min_car_num = np.min(sta_feature_dict[link_id]['car_num'])
+        std_car_num = np.std(sta_feature_dict[link_id]['car_num'])
+
+        sta_feature_dict[link_id] = [mean_speed, std_speed, max_speed, min_speed, mean_car_num, std_car_num, max_car_num, min_car_num]
+    with open('temp/sta_feature_dict.pkl', 'wb') as fout:
+        pkl.dump(sta_feature_dict, fout)
+    return sta_feature_dict
+
+
 def extract_raw_features(traffic_data_list):
     X = []
     for traffic_data in traffic_data_list:
@@ -23,61 +69,130 @@ def extract_raw_features(traffic_data_list):
     X = [f[1] for f in X]
     return X
 
+#extract statistical feature and build train data format
+def sta_features(sta_feature_dict):
+    if os.path.exists("temp/sta_features.pkl"):
+        with open("temp/sta_features.pkl"%feature_name, 'rb') as fin:
+            [trainX, valX, testX] = pkl.load(fin)
+            return trainX, valX, testX
 
-#simple linear model, load all raw features
-def raw_features():
+
     #build training data
     date = 20190701
     k = 20
     trainX = []
-    trainY = []
     for i in range(k):
         date_star = date + i
         traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
-        features = extract_raw_features(traffic_data_list)
+        features = []
+        for traffic_data in traffic_data_list:
+            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
         trainX += features
-        trainY += label_data
+        print("procee file %s END!!"%str(date_star))
 
     #build validation
     date = 20190721
     k=5
     valX = []
-    valY = []
     for i in range(k):
         date_star = date + i
         traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
-        features = extract_raw_features(traffic_data_list)
+        features = []
+        for traffic_data in traffic_data_list:
+            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
         valX += features
-        valY += label_data
+        print("procee file %s END!!"%str(date_star))
 
     #build test
     date = 20190726
     k=5
     testX = []
-    testY = []
     for i in range(k):
         date_star = date + i
         traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
-        features = extract_raw_features(traffic_data_list)
+        features = []
+        for traffic_data in traffic_data_list:
+            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+        features = sorted(features, key=lambda x:x[0])
+        features = [f[1] for f in features]
         testX += features
-        testY += label_data
-    #pass
-    return trainX, trainY, valX, valY, testX, testY
+        print("procee file %s END!!"%str(date_star))
+
+    with open("temp/%s.pkl"%feature_name, 'wb') as fout:
+        pkl.dump([trainX, valX, testX], fout)
+    return trainX, valX, testX
+
+
+#simple linear model, load all raw features
+def raw_features(feature_name='raw_features', extract_func=extract_raw_features):
+    if os.path.exists("temp/%s.pkl"%feature_name):
+        with open("temp/%s.pkl"%feature_name, 'rb') as fin:
+            [trainX, valX, testX] = pkl.load(fin)
+            return trainX, valX, testX
+
+
+    #build training data
+    date = 20190701
+    k = 20
+    trainX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        features = extract_func(traffic_data_list)
+        trainX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build validation
+    date = 20190721
+    k=5
+    valX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        features = extract_func(traffic_data_list)
+        valX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build test
+    date = 20190726
+    k=5
+    testX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
+        features = extract_func(traffic_data_list)
+        testX += features
+        print("procee file %s END!!"%str(date_star))
+
+    with open("temp/%s.pkl"%feature_name, 'wb') as fout:
+        pkl.dump([trainX, valX, testX], fout)
+    return trainX, valX, testX
+
+
 
 
 if __name__ == '__main__':
     start_time = time.time()
-    if os.path.exists("temp/raw_features.pkl"):
-        with open("temp/raw_features.pkl", 'rb') as fin:
-            [trainX, trainY, valX, valY, testX, testY] = pkl.load(fin)
-    else:
-        trainX, trainY, valX, valY, testX, testY = raw_features()
-        with open("temp/raw_features.pkl", 'wb') as fout:
-            pkl.dump([trainX, trainY, valX, valY, testX, testY], fout)
-    print("load data totally costs %f seconds"%(time.time()-start_time))
+    #extract raw without preprocess
+    trainX, valX, testX = raw_features('raw_features', extract_raw_features)
+    print("process raw features end!")
+
+    #extract statistical features
+    sta_feature_dict = extract_statistical_features()
+    print("build sta features dict end!")
+    trainX, valX, testX = extract_features1()
+    print("process statistical features end!")
+    print("load feature data totally costs %f seconds"%(time.time()-start_time))
+
+
+    start_time = time.time()
+    trainY, valY, testY = inputs.extract_raw_label()
+    print("load label data totally costs %f seconds"%(time.time()-start_time))
+
 
     start_time = time.time()
     class_num = 3
