@@ -4,6 +4,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from inputs import load_data
 import inputs
 import sys, time, os
+import numpy as np
 
 from models import Classifier, weighted_f1_score
 import pickle as pkl
@@ -27,7 +28,7 @@ def extract_statistical_features():
         date_star = date + i
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         for traffic_data in traffic_data_list:
-            link_id = traffic_data
+            link_id = traffic_data.link_id
             if link_id not in features_dict:
                 features_dict[link_id] = {}
                 features_dict[link_id]['h_speed'] = []
@@ -87,7 +88,8 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            features.append((link_id, sta_feature_dict[link_id]))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         trainX += features
@@ -102,7 +104,8 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            features.append((link_id, sta_feature_dict[link_id]))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         valX += features
@@ -117,7 +120,8 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            features.append((link_id, sta_feature_dict[link_id]))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         testX += features
