@@ -2,6 +2,7 @@ import sys
 import networkx as nx
 import os
 import pickle as pkl
+from sklearn import preprocessing
 
 class TrafficData():
     def __init__(self, link_id, pred_label=-1, cur_time=None, pred_time=None, cur_road_state=None, his_road_state_list=None):
@@ -146,6 +147,48 @@ def load_topo(fname):
             adj_dict[node] = edges
     G = nx.from_dict_of_lists(adj_dict)
     return G
+
+def load_attr(fname):
+    if os.path.exists("temp/attr.pkl"):
+        with open("temp/attr.pkl", 'rb') as fin:
+            X = pkl.load(fin)
+            return X
+    X = []
+    feature2lb = preprocessing.LabelBinarizer()
+    feature2lb.fit([1, 2, 3])
+    feature3lb = preprocessing.LabelBinarizer()
+    feature3lb.fit([1, 2, 3, 4, 5])
+    feature4lb = preprocessing.LabelBinarizer()
+    feature4lb.fit([2, 3, 4, 5, 6, 7, 8])
+    feature5lb = preprocessing.LabelBinarizer()
+    feature5lb.fit([1, 2, 3])
+    feature7lb = preprocessing.LabelBinarizer()
+    feature7lb.fit([1, 2, 3, 4, 5])
+    with open(fname, 'r') as fin:
+        context = fin.read().strip().split('\n')
+        for line in context:
+            items = line.split('\t')
+            length = int(items[1])
+            direction = feature2lb.transform(int(items[2]))
+            pathclass = feature3lb.transform(int(items[3]))
+            speedclass = feature4lb.transform(int(items[4]))
+            lane_num = feature5lb.transform(int(items[5]))
+            speed_limit = float(items[6])
+            level = feature7lb.transform(int(items[7]))
+            width = int(items[8])
+            f = []
+            f.append(length)
+            f += direction
+            f += pathclass
+            f += speedclass
+            f += lane_num
+            f.append(speed_limit)
+            f += level
+            f.append(width)
+            X.append(f)
+    with open("temp/attr.pkl", 'wb') as fout:
+        pkl.dump(X, fout)
+    return X
 
 
 #extract raw label data
