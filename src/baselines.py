@@ -40,15 +40,15 @@ def extract_statistical_features():
                     features_dict[link_id]['car_num'].append(car_num)
     sta_feature_dict = {}
     for link_id in features_dict:
-        mean_speed = np.mean(sta_feature_dict[link_id]['h_speed'])
-        max_speed = np.max(sta_feature_dict[link_id]['h_speed'])
-        min_speed = np.min(sta_feature_dict[link_id]['h_speed'])
-        std_speed = np.std(sta_feature_dict[link_id]['h_speed'])
+        mean_speed = np.mean(features_dict[link_id]['h_speed'])
+        max_speed = np.max(features_dict[link_id]['h_speed'])
+        min_speed = np.min(features_dict[link_id]['h_speed'])
+        std_speed = np.std(features_dict[link_id]['h_speed'])
 
-        mean_car_num = np.mean(sta_feature_dict[link_id]['car_num'])
-        max_car_num = np.max(sta_feature_dict[link_id]['car_num'])
-        min_car_num = np.min(sta_feature_dict[link_id]['car_num'])
-        std_car_num = np.std(sta_feature_dict[link_id]['car_num'])
+        mean_car_num = np.mean(features_dict[link_id]['car_num'])
+        max_car_num = np.max(features_dict[link_id]['car_num'])
+        min_car_num = np.min(features_dict[link_id]['car_num'])
+        std_car_num = np.std(features_dict[link_id]['car_num'])
 
         sta_feature_dict[link_id] = [mean_speed, std_speed, max_speed, min_speed, mean_car_num, std_car_num, max_car_num, min_car_num]
     with open('temp/sta_feature_dict.pkl', 'wb') as fout:
