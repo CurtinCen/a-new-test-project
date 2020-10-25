@@ -210,7 +210,7 @@ def extract_features1(sta_feature_dict):
         features = []
         for traffic_data in traffic_data_list:
             link_id = traffic_data.link_id
-            if graph.has_node(link_id):
+            if not graph.has_node(link_id):
                 print("link %d not in graph"%link_id)
                 features.append((link_id, [0., 0., 0., 0., 0., 0., 0., 0.]))
             else:
@@ -244,7 +244,7 @@ def extract_features1(sta_feature_dict):
         features = []
         for traffic_data in traffic_data_list:
             link_id = traffic_data.link_id
-            if graph.has_node(link_id):
+            if not graph.has_node(link_id):
                 print("link %d not in graph"%link_id)
                 features.append((link_id, [0., 0., 0., 0., 0., 0., 0., 0.]))
             else:
