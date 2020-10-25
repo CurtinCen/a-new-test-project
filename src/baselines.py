@@ -32,7 +32,7 @@ def extract_statistical_features():
                 features_dict[link_id] = {}
                 features_dict[link_id]['h_speed'] = []
                 features_dict[link_id]['car_num'] = []
-            for his_road_state in his_road_state_list:
+            for his_road_state in traffic_data.his_road_state_list:
                 for h_road in his_road_state:
                     h_speed = h_road[1]
                     car_num = h_road[4]
@@ -292,8 +292,8 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features)
 if __name__ == '__main__':
     start_time = time.time()
     #extract raw without preprocess
-    trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features)
-    print("process raw features end!")
+    #trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features)
+    #print("process raw features end!")
 
     #extract statistical features
     sta_feature_dict = extract_statistical_features()
@@ -304,17 +304,17 @@ if __name__ == '__main__':
     trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
     print("process neighbor sta features end!")
 
-    trainX = trainX0
-    valX = valX0
-    testX = testX0
+    #trainX = trainX0
+    #valX = valX0
+    #testX = testX0
 
     trainX = trainX1
     valX = valX1
     testX = testX1
 
-    trainX = np.concatenate((trainX0, trainX1), axis=1)
-    valX = np.concatenate((valX0, valX1), axis=1)
-    testX = np.concatenate((testX0, testX1), axis=1)
+    #trainX = np.concatenate((trainX0, trainX1), axis=1)
+    #valX = np.concatenate((valX0, valX1), axis=1)
+    #testX = np.concatenate((testX0, testX1), axis=1)
 
     print("load feature data totally costs %f seconds"%(time.time()-start_time))
 
