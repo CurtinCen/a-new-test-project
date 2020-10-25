@@ -268,7 +268,7 @@ def extract_features1(sta_feature_dict):
         testX += features
         print("procee file %s END!!"%str(date_star))
 
-    with open("temp/%s.pkl"%feature_name, 'wb') as fout:
+    with open("temp/nb_sta_features.pkl", 'wb') as fout:
         pkl.dump([trainX, valX, testX], fout)
     return trainX, valX, testX
 
@@ -351,6 +351,10 @@ if __name__ == '__main__':
     #testX = np.concatenate((testX0, testX1), axis=1)
 
     print("load feature data totally costs %f seconds"%(time.time()-start_time))
+    
+    start_time = time.time()
+    link_attr = inputs.load_attr('traffic/attr.txt')
+    print("load link attributes totally costs %f seconds"%(time.time()- start_time))
 
 
     start_time = time.time()
