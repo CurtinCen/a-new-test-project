@@ -27,7 +27,7 @@ def extract_statistical_features():
         date_star = date + i
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         for traffic_data in traffic_data_list:
-            link_id = traffic_data
+            link_id = traffic_data.link_id
             if link_id not in features_dict:
                 features_dict[link_id] = {}
                 features_dict[link_id]['h_speed'] = []
@@ -77,6 +77,14 @@ def sta_features(sta_feature_dict):
             [trainX, valX, testX] = pkl.load(fin)
             return trainX, valX, testX
 
+    if os.path.exists("temp/mean_sta_features.pkl"):
+        with open("temp/mean_sta_features.pkl", 'rb') as fin:
+            mean_sta_feature_vec = pkl.load(fin)
+    else:
+        features = np.array(sta_feature_dict.values())
+        mean_sta_feature_vec = np.mean(features, axis=0)
+        with open("temp/mean_sta_features.pkl", 'wb') as fout:
+            pkl.dump(mean_sta_features, fout)
 
     #build training data
     date = 20190701
@@ -87,7 +95,8 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            features.append((link_id, sta_feature_dict[link_id]))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         trainX += features
@@ -102,7 +111,11 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            if link_id in sta_feature_dict:
+                features.append((link_id, sta_feature_dict[link_id]))
+            else:
+                features.append((link_id, mean_sta_features))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         valX += features
@@ -117,7 +130,11 @@ def sta_features(sta_feature_dict):
         traffic_data_list = inputs.load_data("%s"%str(date_star))
         features = []
         for traffic_data in traffic_data_list:
-            features.append((traffic_data.link_id, sta_feature_dict[link_id]))
+            link_id = traffic_data.link_id
+            if link_id in sta_feature_dict:
+                features.append((link_id, sta_feature_dict[link_id]))
+            else:
+                features.append((link_id, mean_sta_features))
         features = sorted(features, key=lambda x:x[0])
         features = [f[1] for f in features]
         testX += features
@@ -134,12 +151,19 @@ def extract_features1(sta_feature_dict):
     #feature 2: [mean history car number of all neighbors, std, max, min]
 
     if os.path.exists("temp/nb_sta_features.pkl"):
-        with open("temp/nb_sta_features.pkl"%feature_name, 'rb') as fin:
+        with open("temp/nb_sta_features.pkl", 'rb') as fin:
             [trainX, valX, testX] = pkl.load(fin)
             return trainX, valX, testX
 
     topo_file = 'traffic/topo.txt'
     graph = inputs.load_topo(topo_file)
+
+    if os.path.exists("temp/mean_sta_features.pkl"):
+        with open("temp/mean_sta_features.pkl", 'rb') as fin:
+            mean_sta_feature_vec = pkl.load(fin)
+    else:
+        features = np.array(sta_feature_dict.values())
+        mean_sta_feature_vec = np.mean(features, axis=0)
 
     #build training data
     date = 20190701
@@ -158,7 +182,10 @@ def extract_features1(sta_feature_dict):
                 nbs = graph.neighbors(link_id)
                 nb_item_list = []
                 for n in nbs:
-                    t = sta_feature_dict[n]
+                    if n in sta_feature_dict:
+                        t = sta_feature_dict[n]
+                    else:
+                        t = mean_sta_feature_vec
                     nb_item_list.append(t)
                 nb_item_list = np.array(nb_item_list)
                 nb_item_mean = np.mean(nb_item_list, axis=0)
@@ -189,7 +216,10 @@ def extract_features1(sta_feature_dict):
                 nbs = graph.neighbors(link_id)
                 nb_item_list = []
                 for n in nbs:
-                    t = sta_feature_dict[n]
+                    if n in sta_feature_dict:
+                        t = sta_feature_dict[n]
+                    else:
+                        t = mean_sta_feature_vec
                     nb_item_list.append(t)
                 nb_item_list = np.array(nb_item_list)
                 nb_item_mean = np.mean(nb_item_list, axis=0)
@@ -220,7 +250,10 @@ def extract_features1(sta_feature_dict):
                 nbs = graph.neighbors(link_id)
                 nb_item_list = []
                 for n in nbs:
-                    t = sta_feature_dict[n]
+                    if n in sta_feature_dict:
+                        t = sta_feature_dict[n]
+                    else:
+                        t = mean_sta_feature_vec
                     nb_item_list.append(t)
                 nb_item_list = np.array(nb_item_list)
                 nb_item_mean = np.mean(nb_item_list, axis=0)
