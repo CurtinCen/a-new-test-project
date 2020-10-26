@@ -247,3 +247,18 @@ def extract_raw_label():
     return trainY, valY, testY
 
 
+#build upload data format
+def build_upload_data(traffic_data_list, pred_data, fout_name):
+    data_list = []
+    for traffic_data in traffic_data_list:
+        data_list.append(traffic_data.get_upload_format())
+    data_list = sorted(data_list, key=lambda x:x[0])
+    for i, pred_label in enumerate(pred_data):
+        data_list[i].append(pred_label)
+
+    with open(fout_name, 'w') as fout:
+        fout.write('link,current_slice_id,future_slice_id,label\n')
+        for data in data_list:
+            data = [str(d) for d in data]
+            out_str = ','.join(data)
+            fout.write("%s\n"%out_str)
