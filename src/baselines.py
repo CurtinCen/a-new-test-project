@@ -397,6 +397,8 @@ if __name__ == '__main__':
     trainX3, valX3, testX3 = attr_features('raw_attr_features')
     print('process raw attr features end!')
 
+    sys.exit(0)
+
     #trainX = trainX0
     #valX = valX0
     #testX = testX0
