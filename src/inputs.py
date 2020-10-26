@@ -164,28 +164,39 @@ def load_attr(fname):
     feature5lb.fit([1, 2, 3])
     feature7lb = preprocessing.LabelBinarizer()
     feature7lb.fit([1, 2, 3, 4, 5])
+    length = []
+    direction = []
+    pathclass = []
+    speedclass = []
+    lane_num = []
+    speed_limit = []
+    level = []
+    width = []
     with open(fname, 'r') as fin:
         context = fin.read().strip().split('\n')
         for line in context:
             items = line.split('\t')
-            length = int(items[1])
-            direction = feature2lb.transform(int(items[2]))
-            pathclass = feature3lb.transform(int(items[3]))
-            speedclass = feature4lb.transform(int(items[4]))
-            lane_num = feature5lb.transform(int(items[5]))
-            speed_limit = float(items[6])
-            level = feature7lb.transform(int(items[7]))
-            width = int(items[8])
-            f = []
-            f.append(length)
-            f += direction
-            f += pathclass
-            f += speedclass
-            f += lane_num
-            f.append(speed_limit)
-            f += level
-            f.append(width)
-            X.append(f)
+            length.append(int(items[1]))
+            direction.append(int(items[2]))
+            pathclass.append(int(items[3]))
+            speedclass.append(int(items[4]))
+            lane_num.append(int(items[5]))
+            speed_limit.append(float(items[6]))
+            level.append(int(items[7]))
+            width.append(int(items[8]))
+
+    direction = feature2lb.transform(direction)
+    pathclass = feature3lb.transform(pathclass)
+    speedclass = feature4lb.transform(speedclass)
+    lane_num = feature5lb.transform(lane_num)
+    level = feature7lb.transform(level)
+
+    length = np.reshape(np.array(length), (-1, 1))
+    speed_limit = np.reshape(np.array(speed_limit), (-1, 1))
+    width = np.reshape(np.array(width), (-1, 1))
+
+    X = np.concatenate([length, direction, pathclass, speedclass,lane_num, speed_limit, level, width], axis=1)
+
     with open("temp/attr.pkl", 'wb') as fout:
         pkl.dump(X, fout)
     return X
