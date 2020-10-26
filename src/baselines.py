@@ -156,13 +156,66 @@ def build_test_X(traffic_data_list, feature_flag):
     return X
 
 
+#extract statistical feature and build train data format
+def attr_features(link_attr, attr_name='raw_attr_features'):
+
+    if os.path.exists("temp/%s_train.txt"%attr_name):
+        trainX, val, testX = load_feature_from_txt(attr_name)
+        return trainx, valX, testX
+
+    
+
+    #build training data
+    date = 20190701
+    k = 20
+    trainX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = extract_raw_attr_func(traffic_data_list, link_attr)
+        trainX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build validation
+    date = 20190721
+    k=5
+    valX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = extract_raw_attr_func(traffic_data_list, link_attr)  
+        valX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #build test
+    date = 20190726
+    k=5
+    testX = []
+    for i in range(k):
+        date_star = date + i
+        traffic_data_list = inputs.load_data("%s"%str(date_star))
+        features = extract_raw_attr_func(traffic_data_list, link_attr)
+        testX += features
+        print("procee file %s END!!"%str(date_star))
+
+    #with open("temp/sta_features.pkl", 'wb') as fout:
+    #    pkl.dump([trainX, valX, testX], fout)
+    save_feature_to_txt(trainX, valX, testX, attr_name)
+
+    return trainX, valX, testX
+
+
 
 #extract statistical feature and build train data format
 def sta_features(sta_feature_dict):
-    if os.path.exists("temp/sta_features.pkl"):
-        with open("temp/sta_features.pkl", 'rb') as fin:
-            [trainX, valX, testX] = pkl.load(fin)
-            return trainX, valX, testX
+    #if os.path.exists("temp/sta_features.pkl"):
+    #    with open("temp/sta_features.pkl", 'rb') as fin:
+    #        [trainX, valX, testX] = pkl.load(fin)
+    #        return trainX, valX, testX
+
+    if os.path.exists("temp/sta_features_train.txt"):
+        trainX, val, testX = load_feature_from_txt('sta_features')
+        return trainx, valX, testX
 
     
 
@@ -199,8 +252,10 @@ def sta_features(sta_feature_dict):
         testX += features
         print("procee file %s END!!"%str(date_star))
 
-    with open("temp/sta_features.pkl", 'wb') as fout:
-        pkl.dump([trainX, valX, testX], fout)
+    #with open("temp/sta_features.pkl", 'wb') as fout:
+    #    pkl.dump([trainX, valX, testX], fout)
+    save_feature_to_txt(trainX, valX, testX, 'sta_features')
+
     return trainX, valX, testX
 
 
@@ -214,6 +269,10 @@ def extract_features1(sta_feature_dict):
         with open("temp/nb_sta_features.pkl", 'rb') as fin:
             [trainX, valX, testX] = pkl.load(fin)
             return trainX, valX, testX
+
+    if os.path.exists("temp/nb_sta_features_train.txt"):
+        trainX, val, testX = load_feature_from_txt('nb_sta_features')
+        return trainx, valX, testX
 
     topo_file = 'traffic/topo.txt'
     graph = inputs.load_topo(topo_file)
@@ -258,8 +317,10 @@ def extract_features1(sta_feature_dict):
         testX += features
         print("procee file %s END!!"%str(date_star))
 
-    with open("temp/nb_sta_features.pkl", 'wb') as fout:
-        pkl.dump([trainX, valX, testX], fout)
+    #with open("temp/nb_sta_features.pkl", 'wb') as fout:
+    #    pkl.dump([trainX, valX, testX], fout)
+    save_feature_to_txt(trainX, valX, testX, 'nb_sta_features')
+        
     return trainX, valX, testX
 
 
@@ -267,10 +328,13 @@ def extract_features1(sta_feature_dict):
 
 #simple linear model, load all raw features
 def raw_features(feature_name='raw_features', extract_func=extract_raw_features_func):
-    if os.path.exists("temp/%s.pkl"%feature_name):
-        with open("temp/%s.pkl"%feature_name, 'rb') as fin:
-            [trainX, valX, testX] = pkl.load(fin)
-            return trainX, valX, testX
+    #if os.path.exists("temp/%s.pkl"%feature_name):
+    #    with open("temp/%s.pkl"%feature_name, 'rb') as fin:
+    #        [trainX, valX, testX] = pkl.load(fin)
+    #        return trainX, valX, testX
+    if os.path.exists("temp/%s_train.txt"%feature_name):
+        trainX, val, testX = load_feature_from_txt(feature_name)
+        return trainx, valX, testX
 
 
     #build training data
@@ -306,8 +370,10 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features_
         testX += features
         print("procee file %s END!!"%str(date_star))
 
-    with open("temp/%s.pkl"%feature_name, 'wb') as fout:
-        pkl.dump([trainX, valX, testX], fout)
+    #with open("temp/%s.pkl"%feature_name, 'wb') as fout:
+    #    pkl.dump([trainX, valX, testX], fout)
+    save_feature_to_txt(trainX, valX, testX, feature_name)
+
     return trainX, valX, testX
 
 
@@ -316,8 +382,8 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features_
 if __name__ == '__main__':
     start_time = time.time()
     #extract raw without preprocess
-    #trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features_func)
-    #print("process raw features end!")
+    trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features_func)
+    print("process raw features end!")
 
     #extract statistical features
     sta_feature_dict = extract_statistical_features()
@@ -325,16 +391,19 @@ if __name__ == '__main__':
     trainX1, valX1, testX1 = sta_features(sta_feature_dict)
     print("process statistical features end!")
 
-    #trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
-    #print("process neighbor sta features end!")
+    trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
+    print("process neighbor sta features end!")
+
+    trainX3, valX3, testX3 = attr_features('raw_attr_features')
+    print('process raw attr features end!')
 
     #trainX = trainX0
     #valX = valX0
     #testX = testX0
 
-    trainX = trainX1
-    valX = valX1
-    testX = testX1
+    #trainX = trainX1
+    #valX = valX1
+    #testX = testX1
 
     #trainX = np.concatenate((trainX0, trainX1), axis=1)
     #valX = np.concatenate((valX0, valX1), axis=1)
@@ -347,33 +416,33 @@ if __name__ == '__main__':
     #print("load link attributes totally costs %f seconds"%(time.time()- start_time))
 
 
-    start_time = time.time()
-    trainY, valY, testY = inputs.extract_raw_label()
-    print("load label data totally costs %f seconds"%(time.time()-start_time))
+    #start_time = time.time()
+    #trainY, valY, testY = inputs.extract_raw_label()
+    #print("load label data totally costs %f seconds"%(time.time()-start_time))
 
 
-    start_time = time.time()
-    class_num = 3
-    clf = Classifier('LR', class_num)
-    clf.train(trainX, trainY)
-    print("training model totally costs %f seconds"%(time.time()-start_time))
+    #start_time = time.time()
+    #class_num = 3
+    #clf = Classifier('LR', class_num)
+    #clf.train(trainX, trainY)
+    #print("training model totally costs %f seconds"%(time.time()-start_time))
 
-    start_time = time.time()
-    pred_trainX = clf.pred(trainX)
-    print("pred train data totally costs %f seconds"%(time.time()-start_time))
+    #start_time = time.time()
+    #pred_trainX = clf.pred(trainX)
+    #print("pred train data totally costs %f seconds"%(time.time()-start_time))
 
-    start_time = time.time()
-    pred_valX = clf.pred(valX)
-    print("pred val data totally costs %f seconds"%(time.time()-start_time))
+    #start_time = time.time()
+    #pred_valX = clf.pred(valX)
+    #print("pred val data totally costs %f seconds"%(time.time()-start_time))
 
-    print("f1-score in training %f, in validation %f"%(weighted_f1_score(trainY, pred_trainX), weighted_f1_score(valY, pred_valX)))
+    #print("f1-score in training %f, in validation %f"%(weighted_f1_score(trainY, pred_trainX), weighted_f1_score(valY, pred_valX)))
 
 
-    feature_flag = [0, 0, 0, 0]
-    test_traffic_data_list = load_data('test')
-    testX = build_test_X(test_traffic_data_list, feature_flag)
-    testY = clf.pred(testX)
-    build_upload_data(test_traffic_data_list, testY, 'upload1.csv')
+    #feature_flag = [0, 0, 0, 0]
+    #test_traffic_data_list = load_data('test')
+    #testX = build_test_X(test_traffic_data_list, feature_flag)
+    #testY = clf.pred(testX)
+    #build_upload_data(test_traffic_data_list, testY, 'upload1.csv')
 
 
 

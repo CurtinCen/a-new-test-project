@@ -262,3 +262,16 @@ def build_upload_data(traffic_data_list, pred_data, fout_name):
             data = [str(d) for d in data]
             out_str = ','.join(data)
             fout.write("%s\n"%out_str)
+
+
+def save_feature_to_txt(trainX, valX, testX, fname):
+    np.savetxt('temp/%s_train.txt'%fname, trainX, delimiter=',')
+    np.savetxt('temp/%s_val.txt'%fname, valX, delimiter=',')
+    np.savetxt('temp/%s_test.txt'%fname, testX, delimiter=',')
+
+def load_feature_from_txt(fname):
+    trainX = np.loadtxt('temp/%s_train.txt'%fname, delimiter=',')
+    valX = np.loadtxt('temp/%s_val.txt'%fname, delimiter=',')
+    testX = np.loadtxt('temp/%s_test.txt'%fname, delimiter=',')
+    return trainX, valX, testX
+
