@@ -217,7 +217,7 @@ def sta_features(sta_feature_dict):
         trainX, val, testX = load_feature_from_txt('sta_features')
         return trainx, valX, testX
 
-    
+
 
     #build training data
     date = 20190701
@@ -237,7 +237,7 @@ def sta_features(sta_feature_dict):
     for i in range(k):
         date_star = date + i
         traffic_data_list = inputs.load_data("%s"%str(date_star))
-        features = extract_sta_features_func(traffic_data_list, sta_feature_dict)    
+        features = extract_sta_features_func(traffic_data_list, sta_feature_dict)
         valX += features
         print("procee file %s END!!"%str(date_star))
 
@@ -405,9 +405,9 @@ if __name__ == '__main__':
     #valX = valX1
     #testX = testX1
 
-    #trainX = np.concatenate((trainX0, trainX1), axis=1)
-    #valX = np.concatenate((valX0, valX1), axis=1)
-    #testX = np.concatenate((testX0, testX1), axis=1)
+    trainX = np.concatenate((trainX0, trainX1), axis=1)
+    valX = np.concatenate((valX0, valX1), axis=1)
+    testX = np.concatenate((testX0, testX1), axis=1)
 
     #print("load feature data totally costs %f seconds"%(time.time()-start_time))
 
