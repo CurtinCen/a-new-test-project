@@ -209,6 +209,11 @@ def extract_raw_label():
         with open("temp/labels.pkl", 'rb') as fin:
             [trainY, valY, testY] = pkl.load(fin)
             return trainY, valY, testY
+    #if os.path.exists("temp/labels_train.txt"):
+    #    trainY, valY, testY = load_feature_from_txt('labels')
+    #    return trainY, valY, testY
+
+
     #build training data
     date = 20190701
     k = 20
@@ -242,8 +247,11 @@ def extract_raw_label():
         label_data = collect_label_data_from_traffic_data_list(traffic_data_list)
         testY += label_data
         print("procee file %s END!!"%str(date_star))
+
     with open('temp/labels.pkl', 'wb') as fout:
         pkl.dump([trainY, valY, testY], fout)
+    #save_feature_to_txt(trainY, valY, testY, 'labels')
+    
     return trainY, valY, testY
 
 

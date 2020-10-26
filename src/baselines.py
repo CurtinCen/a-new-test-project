@@ -1,7 +1,7 @@
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import label_binarize, LabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
-from inputs import load_data
+from inputs import load_data, save_feature_to_txt, load_feature_from_txt
 import inputs
 import sys, time, os
 import numpy as np
@@ -407,9 +407,9 @@ if __name__ == '__main__':
     #valX = valX1
     #testX = testX1
 
-    trainX = np.concatenate((trainX0, trainX1), axis=1)
-    valX = np.concatenate((valX0, valX1), axis=1)
-    testX = np.concatenate((testX0, testX1), axis=1)
+    #trainX = np.concatenate((trainX0, trainX1), axis=1)
+    #valX = np.concatenate((valX0, valX1), axis=1)
+    #testX = np.concatenate((testX0, testX1), axis=1)
 
     #print("load feature data totally costs %f seconds"%(time.time()-start_time))
 
@@ -418,24 +418,54 @@ if __name__ == '__main__':
     #print("load link attributes totally costs %f seconds"%(time.time()- start_time))
 
 
-    #start_time = time.time()
-    #trainY, valY, testY = inputs.extract_raw_label()
-    #print("load label data totally costs %f seconds"%(time.time()-start_time))
+    start_time = time.time()
+    trainY, valY, testY = inputs.extract_raw_label()
+    print("load label data totally costs %f seconds"%(time.time()-start_time))
 
 
-    #start_time = time.time()
-    #class_num = 3
-    #clf = Classifier('LR', class_num)
+
+    start_time = time.time()
+    class_num = 3
+    clf = MySGDClassifier('LR', [1, 2, 3])
     #clf.train(trainX, trainY)
-    #print("training model totally costs %f seconds"%(time.time()-start_time))
+
+    feature_name = 'f1'
+    batch_size = 3000
+
+
+    #partial training model
+    batch_X = []
+    batch_Y = []
+    eval_f1 = []
+    for i, line in enumerate(open('temp/%s_train.txt'%feature_name, 'r')):
+        c = StringIO(line)
+        X = np.loadtxt(c, delimiter=',')
+        print(X)
+        sys.exit(0)
+        batch_X.append(X)
+        batch_Y.append(trainY[i])
+        if (i+1)%batch_size == 0:
+            clf.partial_train(batch_X, batch_Y)
+            batch_X = []
+            batch_Y = []
+            pred_Y = clf.pred(batch_X)
+            eval_f1.append(weighted_f1_score(batch_Y, pred_Y))
+    clf.partial_train(batch_X, batch_Y)
+    pred_Y = clf.pred(batch_X)
+    eval_f1.append(weighted_f1_score(batch_Y, pred_Y))
+    print("averge weighted f1 score in training %f"%np.mean(eval_f1))
+    print("training model totally costs %f seconds"%(time.time()-start_time))
 
     #start_time = time.time()
     #pred_trainX = clf.pred(trainX)
     #print("pred train data totally costs %f seconds"%(time.time()-start_time))
 
-    #start_time = time.time()
-    #pred_valX = clf.pred(valX)
-    #print("pred val data totally costs %f seconds"%(time.time()-start_time))
+    start_time = time.time()
+    valX = np.loadtxt('temp/%s_val.txt'%feature_name, 'r')
+    pred_valY = clf.pred(valX)
+    eval_val_f1 = weighted_f1_score(valY, pred_valY)
+    print('weighted f1 score in validation %f'%eval_val_f1)
+    print("pred val data totally costs %f seconds"%(time.time()-start_time))
 
     #print("f1-score in training %f, in validation %f"%(weighted_f1_score(trainY, pred_trainX), weighted_f1_score(valY, pred_valX)))
 
