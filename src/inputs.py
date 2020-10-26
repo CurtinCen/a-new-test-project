@@ -2,6 +2,7 @@ import sys
 import networkx as nx
 import os
 import pickle as pkl
+import numpy as np
 from sklearn import preprocessing
 
 class TrafficData():
@@ -214,8 +215,8 @@ def extract_raw_label():
     trainY = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        traffic_data_list = load_data(str(date_star))
+        label_data = collect_label_data_from_traffic_data_list(traffic_data_list)
         trainY += label_data
         print("procee file %s END!!"%str(date_star))
 
@@ -225,8 +226,8 @@ def extract_raw_label():
     valY = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        traffic_data_list = load_data(str(date_star))
+        label_data = collect_label_data_from_traffic_data_list(traffic_data_list)
         valY += label_data
         print("procee file %s END!!"%str(date_star))
 
@@ -237,8 +238,8 @@ def extract_raw_label():
     testY = []
     for i in range(k):
         date_star = date + i
-        traffic_data_list = inputs.load_data("./traffic/%s.txt"%str(date_star))
-        label_data = inputs.collect_label_data_from_traffic_data_list(traffic_data_list)
+        traffic_data_list = load_data(str(date_star))
+        label_data = collect_label_data_from_traffic_data_list(traffic_data_list)
         testY += label_data
         print("procee file %s END!!"%str(date_star))
     with open('temp/labels.pkl', 'wb') as fout:

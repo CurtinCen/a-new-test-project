@@ -74,7 +74,7 @@ def extract_raw_features(traffic_data_list):
 #extract statistical feature and build train data format
 def sta_features(sta_feature_dict):
     if os.path.exists("temp/sta_features.pkl"):
-        with open("temp/sta_features.pkl"%feature_name, 'rb') as fin:
+        with open("temp/sta_features.pkl", 'rb') as fin:
             [trainX, valX, testX] = pkl.load(fin)
             return trainX, valX, testX
 
@@ -332,29 +332,29 @@ if __name__ == '__main__':
     #extract statistical features
     sta_feature_dict = extract_statistical_features()
     print("build sta features dict end!")
-    #trainX1, valX1, testX1 = sta_features(sta_feature_dict)
-    #print("process statistical features end!")
+    trainX1, valX1, testX1 = sta_features(sta_feature_dict)
+    print("process statistical features end!")
 
-    trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
-    print("process neighbor sta features end!")
+    #trainX2, valX2, testX2 = extract_features1(sta_feature_dict)
+    #print("process neighbor sta features end!")
 
     #trainX = trainX0
     #valX = valX0
     #testX = testX0
 
-    trainX = trainX2
-    valX = valX2
-    testX = testX2
+    trainX = trainX1
+    valX = valX1
+    testX = testX1
 
     #trainX = np.concatenate((trainX0, trainX1), axis=1)
     #valX = np.concatenate((valX0, valX1), axis=1)
     #testX = np.concatenate((testX0, testX1), axis=1)
 
-    print("load feature data totally costs %f seconds"%(time.time()-start_time))
-    
-    start_time = time.time()
-    link_attr = inputs.load_attr('traffic/attr.txt')
-    print("load link attributes totally costs %f seconds"%(time.time()- start_time))
+    #print("load feature data totally costs %f seconds"%(time.time()-start_time))
+
+    #start_time = time.time()
+    #link_attr = inputs.load_attr('traffic/attr.txt')
+    #print("load link attributes totally costs %f seconds"%(time.time()- start_time))
 
 
     start_time = time.time()
