@@ -326,8 +326,8 @@ def raw_features(feature_name='raw_features', extract_func=extract_raw_features)
 if __name__ == '__main__':
     start_time = time.time()
     #extract raw without preprocess
-    #trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features)
-    #print("process raw features end!")
+    trainX0, valX0, testX0 = raw_features('raw_features', extract_raw_features)
+    print("process raw features end!")
 
     #extract statistical features
     sta_feature_dict = extract_statistical_features()
@@ -346,9 +346,9 @@ if __name__ == '__main__':
     valX = valX1
     testX = testX1
 
-    #trainX = np.concatenate((trainX0, trainX1), axis=1)
-    #valX = np.concatenate((valX0, valX1), axis=1)
-    #testX = np.concatenate((testX0, testX1), axis=1)
+    trainX = np.concatenate((trainX0, trainX1), axis=1)
+    valX = np.concatenate((valX0, valX1), axis=1)
+    testX = np.concatenate((testX0, testX1), axis=1)
 
     #print("load feature data totally costs %f seconds"%(time.time()-start_time))
 
